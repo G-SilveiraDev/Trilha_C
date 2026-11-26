@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cadastro de candidato – demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calmo, institucional, didático — um formulário público que não pune quem erra.
+   IDEA: a ficha de inscrição impressa, com a correção escrita a lápis logo abaixo do campo.
+   PICTURE: o próprio formulário, uma coluna, com o aviso de erro em destaque sob cada campo.
+   COLOUR and TYPE: fundo branco, tinta quase preta, teal #0d7680 para ações, vermelho #b3261e só para erro; Libre Franklin.
+   LAYOUT: título curto, aviso de demonstração, formulário em coluna única até 640px. */
+:root{color-scheme:light dark;
+  --bg:light-dark(#ffffff,#121516);--ink:light-dark(#1a1817,#eef1f1);--mute:light-dark(#555b5e,#a9b2b5);
+  --line:light-dark(#c9cfd1,#3a4346);--field:light-dark(#ffffff,#1b2022);--acc:light-dark(#0d7680,#4fc1c9);
+  --err:light-dark(#b3261e,#ff8a80);--errbg:light-dark(#fdecea,#3a1f1d);--note:light-dark(#fff4d6,#3a3220)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Libre Franklin",system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:640px;margin:0 auto;padding:clamp(24px,4vw,48px) max(5vw,16px) 64px}
+h1{font-size:clamp(30px,5vw,40px);line-height:1.08;font-weight:800;margin:0 0 8px;text-wrap:balance}
+.lead{color:var(--mute);margin:0 0 20px}
+.demo{background:var(--note);border-radius:8px;padding:12px 14px;font-size:15px;margin-bottom:28px}
+fieldset{border:0;padding:0;margin:0 0 28px}
+legend{font-weight:800;font-size:20px;margin-bottom:12px;padding:0}
+.campo{margin-bottom:18px}
+label{display:block;font-weight:600;margin-bottom:6px}
+.obr{color:var(--mute);font-weight:400;font-size:15px;white-space:nowrap}
+input,select{width:100%;min-height:48px;font:inherit;font-size:17px;color:var(--ink);background:var(--field);
+  border:2px solid var(--line);border-radius:8px;padding:10px 12px}
+input:focus,select:focus,button:focus{outline:3px solid var(--acc);outline-offset:2px}
+input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--err);background:var(--errbg)}
+.erro{display:none;align-items:flex-start;gap:8px;color:var(--err);font-weight:600;font-size:16px;margin:8px 0 0}
+.erro.on{display:flex}
+.erro svg{flex:none;width:22px;height:22px;margin-top:1px}
+.dica{color:var(--mute);font-size:15px;margin:4px 0 0}
+.linha{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 16px}
+@media(max-width:600px){.linha{grid-template-columns:minmax(0,1fr)}}
+button{min-height:52px;padding:0 28px;font:inherit;font-weight:800;font-size:18px;color:#fff;background:var(--acc);
+  border:0;border-radius:8px;cursor:pointer}
+:root[data-theme=dark] button{color:#0b1a1b}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) button{color:#0b1a1b}}
+.ok{display:none;border:2px solid var(--acc);border-radius:8px;padding:16px;margin-top:20px}
+.ok.on{display:block}
+.ok strong{display:block;font-size:19px;margin-bottom:4px}
+.rodape{color:var(--mute);font-size:14px;margin-top:40px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Cadastro de candidato</h1>
+  <p class="lead">Preencha seus dados para se candidatar às vagas de estágio.</p>
+  <p class="demo" role="note"><strong>Versão de demonstração acadêmica.</strong> Use apenas dados fictícios. Nada é enviado nem salvo.</p>
+
+  <form id="form" novalidate>
+    <fieldset>
+      <legend>Dados pessoais</legend>
+      <div class="campo"><label for="nome">Nome completo <span class="obr">(obrigatório)</span></label>
+        <input id="nome" name="nome" autocomplete="off" required aria-describedby="erro-nome"></div>
+      <div class="linha">
+        <div class="campo"><label for="cpf">CPF <span class="obr">(obrigatório)</span></label>
+          <input id="cpf" name="cpf" inputmode="numeric" autocomplete="off" required aria-describedby="erro-cpf"></div>
+        <div class="campo"><label for="nasc">Data de nascimento <span class="obr">(obrigatório)</span></label>
+          <input id="nasc" name="nasc" type="date" required aria-describedby="erro-nasc"></div>
+      </div>
+      <div class="campo"><label for="email">E-mail <span class="obr">(obrigatório)</span></label>
+        <input id="email" name="email" type="email" autocomplete="off" required aria-describedby="erro-email"></div>
+      <div class="campo"><label for="tel">Telefone <span class="obr">(obrigatório)</span></label>
+        <input id="tel" name="tel" type="tel" autocomplete="off" required aria-describedby="erro-tel"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Endereço</legend>
+      <div class="linha">
+        <div class="campo"><label for="cep">CEP <span class="obr">(obrigatório)</span></label>
+          <input id="cep" name="cep" inputmode="numeric" autocomplete="off" required aria-describedby="erro-cep"></div>
+        <div class="campo"><label for="uf">Estado <span class="obr">(obrigatório)</span></label>
+          <select id="uf" name="uf" required aria-describedby="erro-uf"><option value="">Selecione</option></select></div>
+      </div>
+      <div class="campo"><label for="cidade">Cidade <span class="obr">(obrigatório)</span></label>
+        <input id="cidade" name="cidade" autocomplete="off" required aria-describedby="erro-cidade"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Dados acadêmicos</legend>
+      <div class="campo"><label for="inst">Instituição de ensino <span class="obr">(obrigatório)</span></label>
+        <input id="inst" name="inst" autocomplete="off" required aria-describedby="erro-inst"></div>
+      <div class="linha">
+        <div class="campo"><label for="curso">Curso <span class="obr">(obrigatório)</span></label>
+          <input id="curso" name="curso" autocomplete="off" required aria-describedby="erro-curso"></div>
+        <div class="campo"><label for="periodo">Período atual <span class="obr">(obrigatório)</span></label>
+          <select id="periodo" name="periodo" required aria-describedby="erro-periodo"><option value="">Selecione</option></select></div>
+      </div>
+      <div class="campo"><label for="conclusao">Previsão de conclusão <span class="obr">(opcional)</span></label>
+        <input id="conclusao" name="conclusao" type="month" aria-describedby="dica-conclusao">
+        <p class="dica" id="dica-conclusao">Mês e ano em que você espera se formar.</p></div>
+    </fieldset>
+
+    <button type="submit" id="enviar">Enviar cadastro</button>
+    <div class="ok" id="ok" tabindex="-1" role="status"><strong>Cadastro recebido (demonstração).</strong>Nenhum dado foi salvo. Na versão real, você seria levado às vagas.</div>
+  </form>
+  <p class="rodape">Protótipo da HU 1 — validação campo a campo. Atividade acadêmica, sem vínculo oficial com nenhuma instituição.</p>
+</main>
+
+<template id="icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2 1 21h22L12 2Zm0 4.2L19.5 19h-15L12 6.2ZM11 10v5h2v-5h-2Zm0 6v2h2v-2h-2Z"/></svg></template>
+
+<script>
+{
+  const UFS='AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
+  document.getElementById('uf').insertAdjacentHTML('beforeend',UFS.map(u=>`<option>${u}</option>`).join(''));
+  document.getElementById('periodo').insertAdjacentHTML('beforeend',Array.from({length:10},(_,i)=>`<option>${i+1}º período</option>`).join(''));
+
+  const form=document.getElementById('form');
+  const ok=document.getElementById('ok');
+  const icone=document.getElementById('icone');
+  const obrigatorios=[...form.querySelectorAll('[required]')];
+
+  // Cria a mensagem de erro logo abaixo de cada campo obrigatório (CA1 + CA2: ícone, não só cor).
+  for(const campo of obrigatorios){
+    const msg=document.createElement('p');
+    msg.className='erro';msg.id='erro-'+campo.id;msg.setAttribute('aria-live','polite');
+    msg.append(icone.content.cloneNode(true),document.createTextNode('Preenchimento obrigatório'));
+    campo.insertAdjacentElement('afterend',msg);
+  }
+
+  const vazio=c=>!String(c.value).trim();
+  const marcar=(c,erro)=>{
+    c.setAttribute('aria-invalid',erro?'true':'false');
+    document.getElementById('erro-'+c.id).classList.toggle('on',erro);
+  };
+
+  for(const c of obrigatorios){
+    // CA1: ao sair do campo vazio, a mensagem aparece logo abaixo dele.
+    c.addEventListener('blur',()=>marcar(c,vazio(c)));
+    // Some assim que o campo é preenchido.
+    const limpar=()=>{if(!vazio(c))marcar(c,false)};
+    c.addEventListener('input',limpar);c.addEventListener('change',limpar);
+  }
+
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    ok.classList.remove('on');
+    const comErro=obrigatorios.filter(vazio);
+    obrigatorios.forEach(c=>marcar(c,vazio(c)));
+    if(comErro.length){
+      // CA2: o foco do teclado vai para o (primeiro) campo com erro.
+      comErro[0].focus();
+      return;
+    }
+    ok.classList.add('on');ok.focus();
+  });
+}
+</script>
+</body>
+</html>
